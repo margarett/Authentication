@@ -14,14 +14,6 @@ function template_sync_ldap()
 {
 	global $context, $settings, $options, $txt, $scripturl, $modSettings;
 
-	// If sync has finished tell the user.
-	if (!empty($context['ldap_sync_finished'])) {
-		echo '
-			<div class="sync_finished">
-				', $txt['ldap_sync_done'], '
-			</div>';
-	}
-
 	echo '
 	<div id="manage_maintenance">
 		<div class="cat_bar">

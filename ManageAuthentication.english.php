@@ -34,7 +34,6 @@ $txt['ldap_no_results_error'] = 'Error, no results found.';
 $txt['ldap_login_failed'] = 'Failed to login onto LDAP server.';
 $txt['ldap_unable_to_add_member'] = 'Unable to add new member: ';
 $txt['ldap_unable_to_update_member'] = 'Unable to update member ID ';
-$txt['ldap_sync_done'] = 'LDAP sync has completed.';
 $txt['ldap_sync_info'] = 'This task will allow you to import users from an active directory via LDAP.';
 $txt['auth_run_now'] = 'Run now';
 
