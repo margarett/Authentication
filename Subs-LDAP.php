@@ -23,13 +23,13 @@ function authenticationAdminMenuHook(&$admin_areas)
 {
 	global $txt;
 
-	loadLanguage('ManageAuthentication');
+	loadLanguage('ManageLDAP');
 	
 	$admin_areas['config']['areas']['auth'] = array(
 		'label' => $txt['admin_auth_title'],
-		'file' => 'ManageAuthentication.php',
-		'function' => 'ManageAuthentication',
-		'icon' => 'authentication.png',
+		'file' => 'ManageLDAP.php',
+		'function' => 'ManageLDAP',
+		'icon' => 'ldap.png',
 		'permission' => array('admin_forum'),
 		'subsections' => array(
 			'sync_ldap' => array($txt['admin_auth_ldap_sync']),
@@ -102,7 +102,7 @@ function contactLDAPServer($type = '', $login_details = array())
 	global $context, $txt, $smcFunc, $scripturl, $modSettings, $sourcedir;
 	
 	if (!isset($txt['ldap_bind_failed'])) //Maybe we need to reload our language?
-		loadLanguage('ManageAuthentication');
+		loadLanguage('ManageLDAP');
 
 	$vUserCount = 0;
 	$vUserList = null;

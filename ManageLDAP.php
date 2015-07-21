@@ -28,8 +28,8 @@ function ManageAuthentication()
 	
 	checkSession('request');
 
-	loadTemplate('ManageAuthentication');
-	loadLanguage('ManageAuthentication');
+	loadTemplate('ManageLDAP');
+	loadLanguage('ManageLDAP');
 
 	// We'll need the utility functions from here.
 	require_once($sourcedir . '/ManageServer.php');
@@ -69,7 +69,7 @@ function SyncLDAP()
 	}
 	
 	if ($context['running']) {
-		require_once($sourcedir . '/Subs-Authentication.php');
+		require_once($sourcedir . '/Subs-LDAP.php');
 		contactLDAPServer('sync');
 	}
 
