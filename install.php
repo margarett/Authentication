@@ -17,11 +17,10 @@ if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF')) {
 	die('<b>Error:</b> Cannot install - please verify you put this in the same place as SMF\'s index.php.');
 }
 
-add_integration_function('integrate_admin_include', '$sourcedir/Subs-Authentication.php');
-add_integration_function('integrate_admin_areas', 'authenticationAdminMenuHook');
-add_integration_function('integrate_pre_include', '$sourcedir/Subs-Authentication.php');
-add_integration_function('integrate_validate_login', 'authenticationLoginHook');
-add_integration_function('integrate_other_passwords', 'authenticationOtherPasswordHook');
+add_integration_function('integrate_pre_include', '$sourcedir/Subs-LDAP.php');
+add_integration_function('integrate_admin_areas', 'LDAPAdminMenuHook');
+add_integration_function('integrate_validate_login', 'LDAPLoginHook');
+add_integration_function('integrate_other_passwords', 'LDAPOtherPasswordHook');
 
 updateSettings(array(
 	'ldap_protocol_version' => '3',

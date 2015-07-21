@@ -19,7 +19,7 @@ if (!defined('SMF')) {
  * 
  * @param array $admin_areas
  */
-function authenticationAdminMenuHook(&$admin_areas)
+function LDAPAdminMenuHook(&$admin_areas)
 {
 	global $txt;
 
@@ -44,7 +44,7 @@ function authenticationAdminMenuHook(&$admin_areas)
  *
  * @return string, 'retry' if failed authentication or an empty string if passedauthentication. Only if the user is an ldap user.
  */
-function authenticationLoginHook()
+function LDAPLoginHook()
 {
 	global $context, $txt, $smcFunc;
 
@@ -84,7 +84,7 @@ function authenticationLoginHook()
  *
  * @param array $other_passwords
  */
-function authenticationOtherPasswordHook(&$other_passwords)
+function LDAPOtherPasswordHook(&$other_passwords)
 {
 	$other_passwords[] = $_POST['passwrd2'];
 }

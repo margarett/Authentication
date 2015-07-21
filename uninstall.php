@@ -17,10 +17,9 @@ if (file_exists(dirname(__FILE__) . '/SSI.php') && !defined('SMF')) {
 	die('<b>Error:</b> Cannot uninstall - please verify you put this in the same place as SMF\'s index.php.');
 }
 
-remove_integration_function('integrate_admin_include', '$sourcedir/Subs-Authentication.php');
-remove_integration_function('integrate_admin_areas', 'authenticationAdminMenuHook');
-remove_integration_function('integrate_pre_include', '$sourcedir/Subs-Authentication.php');
-remove_integration_function('integrate_validate_login', 'authenticationLoginHook');
-remove_integration_function('integrate_other_passwords', 'authenticationOtherPasswordHook');
+remove_integration_function('integrate_pre_include', '$sourcedir/Subs-LDAP.php');
+remove_integration_function('integrate_admin_areas', 'LDAPAdminMenuHook');
+remove_integration_function('integrate_validate_login', 'LDAPLoginHook');
+remove_integration_function('integrate_other_passwords', 'LDAPOtherPasswordHook');
 
 ?>
