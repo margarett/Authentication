@@ -13,12 +13,12 @@
 // Admin Menu Labels
 $txt['admin_auth_title'] = 'Authentication';
 $txt['admin_auth_ldap_settings'] = 'LDAP Settings';
-$txt['admin_auth_ldap_sync'] = 'Sync LDAP';
+$txt['admin_auth_ldap_test'] = 'Test LDAP';
 
 // Section & Sub-section labels
 $txt['auth_title'] = 'Authentication';
 $txt['auth_description'] = 'Manage and setup different authentication methods for your forum.';
-$txt['ldap_sync_title'] = 'Run LDAP Sync';
+$txt['ldap_test_title'] = 'Run LDAP Connection Test';
 $txt['ldap_settings_title'] = 'LDAP Settings';
 
 // Connection Error
@@ -35,7 +35,7 @@ $txt['ldap_login_failed'] = 'Failed to login onto LDAP server.';
 $txt['ldap_unable_to_add_member'] = 'Unable to add new member: ';
 $txt['ldap_unable_to_update_member'] = 'Unable to update member ID ';
 $txt['ldap_sync_info'] = 'This task will allow you to import users from an active directory via LDAP.';
-$txt['auth_run_now'] = 'Run now';
+$txt['ldap_run_now'] = 'Run now';
 
 // Setting Labels
 $txt['ldap_enabled'] = 'Enable LDAP support';

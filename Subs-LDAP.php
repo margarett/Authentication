@@ -32,7 +32,7 @@ function authenticationAdminMenuHook(&$admin_areas)
 		'icon' => 'ldap.png',
 		'permission' => array('admin_forum'),
 		'subsections' => array(
-			'sync_ldap' => array($txt['admin_auth_ldap_sync']),
+			'test_ldap' => array($txt['admin_auth_ldap_test']),
 			'settings_ldap' => array($txt['admin_auth_ldap_settings']),
 		),
 	);

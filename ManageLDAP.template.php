@@ -17,7 +17,7 @@ function template_sync_ldap()
 	echo '
 	<div id="manage_maintenance">
 		<div class="cat_bar">
-			<h3 class="catbg">', $txt['ldap_sync_title'], '</h3>
+			<h3 class="catbg">', $txt['ldap_test_title'], '</h3>
 		</div>
 		<div class="windowbg">
 			<div class="content">';
@@ -49,7 +49,7 @@ function template_sync_ldap()
 						<p>', $txt['ldap_sync_info'], '</p>';
 			
 				echo '
-						<input type="submit" value="', $txt['auth_run_now'], '" class="button_submit" />
+						<input type="submit" value="', $txt['ldap_run_now'], '" class="button_submit" />
 						<input type="hidden" name="', $context['session_var'], '" value="', $context['session_id'], '" />
 					</form>';
 			}

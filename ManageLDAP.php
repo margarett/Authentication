@@ -14,7 +14,7 @@ if (!defined('SMF')) {
 	die('Hacking attempt...');
 }
 
-function ManageAuthentication()
+function ManageLDAP()
 {	
 	global $context, $txt, $scripturl, $modSettings, $sourcedir;
 	
