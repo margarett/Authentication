@@ -22,7 +22,7 @@ function ManageLDAP()
 	isAllowedTo('admin_forum');
 	
 	$subActions = array(
-		'sync_ldap' => 'SyncLDAP',
+		'test_ldap' => 'TestLDAP',
 		'settings_ldap' => 'SettingsLDAP',
 	);
 	
@@ -38,7 +38,7 @@ function ManageLDAP()
 	$context['sub_template'] = 'show_settings';
 
 	// By default we're viewing LDAP settings
-	$_REQUEST['sa'] = isset($_REQUEST['sa']) && isset($subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : 'sync_ldap';
+	$_REQUEST['sa'] = isset($_REQUEST['sa']) && isset($subActions[$_REQUEST['sa']]) ? $_REQUEST['sa'] : 'test_ldap';
 	$context['sub_action'] = $_REQUEST['sa'];
 
 	// Load up all the tabs...
@@ -54,26 +54,29 @@ function ManageLDAP()
 /**
  * Syncing SMF members table with active directory
  */
-function SyncLDAP()
+function TestLDAP()
 {
 	global $context, $scripturl, $modSettings, $sourcedir;
 
-	$context['body'] = null;
-	$context['running'] = false;
-
 	require_once($sourcedir . '/Errors.php');
 	
-	$context['post_url'] = $scripturl . '?action=admin;area=auth;sa=sync_ldap;run';
-	if (isset($_REQUEST['run'])) {
-		$context['running'] = true;
-	}
-	
-	if ($context['running']) {
-		require_once($sourcedir . '/Subs-LDAP.php');
-		contactLDAPServer('sync');
+	$context['post_url'] = $scripturl . '?action=admin;area=auth;sa=test_ldap;run';
+	//Are we asked to test the connection? Well let's do so!
+	if (isset($_REQUEST['run']))
+	{
+		$ConnData = connectLDAPServer();
+		//Success!
+		if (!empty($ConnData))
+		{
+			closeLDAPServer($ConnData);
+			$context['ldap_test_success'] = true;
+		}
+		//Not yet :(
+		else
+			$context['ldap_test_error'] = true;
 	}
 
-	$context['sub_template'] = 'sync_ldap';
+	$context['sub_template'] = 'test_ldap';
 }
 
 /**

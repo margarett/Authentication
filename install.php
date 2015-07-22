@@ -23,6 +23,7 @@ add_integration_function('integrate_validate_login', 'LDAPLoginHook');
 add_integration_function('integrate_other_passwords', 'LDAPOtherPasswordHook');
 
 updateSettings(array(
+	'ldap_port' => '389', //Default port for LDAP is 389
 	'ldap_protocol_version' => '3',
 	'ldap_referrals' => '0',
 	'ldap_search_filter' => '(cn=*)',

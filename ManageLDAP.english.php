@@ -24,7 +24,9 @@ $txt['ldap_settings_title'] = 'LDAP Settings';
 // Connection Error
 $txt['ldap_disabled'] = 'LDAP disabled, a user tried to login with: ';
 
-// Sync Labels
+// Test Labels
+$txt['ldap_test_error'] = 'LDAP connection test failed. Please check your configuration';
+$txt['ldap_test_success'] = 'LDAP connection test succeeded. Congratulations, your users can now use LDAP for authentication';
 $txt['ldap_conn_not_set'] = 'Some credentials missing, unable to proceed.';
 $txt['ldap_conn_failed'] = 'Failed to connect to LDAP server.';
 $txt['ldap_bind_failed'] = 'Failed to bind LDAP details.';
@@ -34,7 +36,7 @@ $txt['ldap_no_results_error'] = 'Error, no results found.';
 $txt['ldap_login_failed'] = 'Failed to login onto LDAP server.';
 $txt['ldap_unable_to_add_member'] = 'Unable to add new member: ';
 $txt['ldap_unable_to_update_member'] = 'Unable to update member ID ';
-$txt['ldap_sync_info'] = 'This task will allow you to import users from an active directory via LDAP.';
+$txt['ldap_test_info'] = 'This task will allow you to properly test your LDAP configuration.';
 $txt['ldap_run_now'] = 'Run now';
 
 // Setting Labels
@@ -56,6 +58,6 @@ $txt['ldap_primary_membergroup'] = 'Target Membergroup';
 $txt['ldap_membergroup_default'] = '(no primary membergroup)';
 
 //Errors in configuration
-$txt['ldap_config_disabled'] = 'LDAP support is disabled, check configurations';
+$txt['ldap_config_disabled'] = 'LDAP support is disabled, check LDAP Settings';
 $txt['ldap_php_disabled'] = 'LDAP functions in PHP are not enabled! This MOD can\'t work without those';
 ?>

@@ -89,6 +89,58 @@ function LDAPOtherPasswordHook(&$other_passwords)
 	$other_passwords[] = $_POST['passwrd2'];
 }
 
+
+/*
+ * This function connects to the LDAP server and checks all the
+ * login credentials to validate them.
+ *
+ * @returns an array of ldap variables if connection successful, empty if it fails
+ */
+function connectLDAPServer()
+{
+	global $modSettings;
+	
+	$ConnData = array();
+
+	// Basic testing. Every field needs to be filled...
+	if (empty($modSettings['ldap_enabled']) || empty($modSettings['ldap_host']) || empty($modSettings['ldap_user']) ||
+			empty($modSettings['ldap_dn']) || empty($modSettings['ldap_password']))
+		return ConnData();
+		
+	if (empty($modSettings['ldap_port']))
+		$modSettings['ldap_port'] = 389;
+	
+	//Basic tests passed, let's try the connection itself
+	$ConnData['ldapconn'] = ldap_connect($modSettings['ldap_host'], $modSettings['ldap_port']);
+	// No connect? Too bad...
+	if (!$ConnData['ldapconn'])
+		return array();
+	// Setup LDAP options
+	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_PROTOCOL_VERSION, $modSettings['ldap_protocol_version']);
+	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_REFERRALS, isset($modSettings['ldap_referrals']) ? $modSettings['ldap_referrals'] : 0);
+	// Bind. For the "bind" username we need the complete DN...
+	$user = 'cn=' . $modSettings['ldap_user'] . (empty($modSettings['ldap_username_extension']) ? '' : $modSettings['ldap_username_extension']);
+	$user .= empty($modSettings['ldap_dn']) ? '' : ',' . $modSettings['ldap_dn'];
+	$ConnData['ldapbind'] = ldap_bind($ConnData['ldapconn'], $user, $modSettings['ldap_password']);
+	if (!$ConnData['ldapbind'])
+		return array();
+	else
+		return $ConnData;
+}
+
+/*
+ * This function simply closes the connection to the LDAP server
+ *
+ * @param pointer to array &$ConnData which contains the connection parameters
+ * @return
+ */
+function closeLDAPServer(&$ConnData)
+{
+	ldap_close($ConnData['ldapconn']);
+	//Reset the variable. Just in case
+	$ConnData = array();
+}
+
 /*
  * This function does all the work, connecting to the LDAP server and checking all the
  * login credentials to validate them.
