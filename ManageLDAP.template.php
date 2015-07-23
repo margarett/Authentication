@@ -38,10 +38,19 @@ function template_test_ldap()
 		}
 		
 		//Now, test results?
-		if (!empty($context['ldap_test_error'])) //Test failed
+		if (!empty($context['ldap_test_errors'])) //Test failed
 		{
 			echo '
-				<div class="errorbox">', $txt['ldap_test_error'], '</div>';
+				<div class="errorbox">
+					<strong>', $txt['ldap_test_error'], '</strong><br /><br />';
+					if (!empty($context['ldap_test_errors']['LDAP_ErrNum']))
+						echo $txt['ldap_test_error_server_said'] . '<br />';
+					
+					foreach ($context['ldap_test_errors'] as $key => $text)
+						echo '<strong>' . $key . ':</strong> ' . $text . '<br>';
+					
+			echo '	
+				</div>';
 		}
 		if (!empty($context['ldap_test_success'])) //Test succeeded, yay!
 		{

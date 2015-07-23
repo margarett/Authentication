@@ -94,51 +94,66 @@ function LDAPOtherPasswordHook(&$other_passwords)
  * This function connects to the LDAP server and checks all the
  * login credentials to validate them.
  *
- * @returns an array of ldap variables if connection successful, empty if it fails
+ * @returns an array of ldap variables
  */
 function connectLDAPServer()
 {
-	global $modSettings;
+	global $modSettings, $txt;
 	
 	$ConnData = array();
 
 	// Basic testing. Every field needs to be filled...
 	if (empty($modSettings['ldap_enabled']) || empty($modSettings['ldap_host']) || empty($modSettings['ldap_user']) ||
 			empty($modSettings['ldap_dn']) || empty($modSettings['ldap_password']))
-		return ConnData();
-		
+	
+	{
+		$ConnData['error']['LDAP_ErrMsg'] = $txt['ldap_conn_not_set'];
+		return $ConnData;
+	}
+	
+	//389 is the default port.
 	if (empty($modSettings['ldap_port']))
 		$modSettings['ldap_port'] = 389;
 	
 	//Basic tests passed, let's try the connection itself
 	$ConnData['ldapconn'] = ldap_connect($modSettings['ldap_host'], $modSettings['ldap_port']);
-	// No connect? Too bad...
-	if (!$ConnData['ldapconn'])
-		return array();
 	// Setup LDAP options
 	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_PROTOCOL_VERSION, $modSettings['ldap_protocol_version']);
 	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_REFERRALS, isset($modSettings['ldap_referrals']) ? $modSettings['ldap_referrals'] : 0);
 	// Bind. For the "bind" username we need the complete DN...
 	$user = 'cn=' . $modSettings['ldap_user'] . (empty($modSettings['ldap_username_extension']) ? '' : $modSettings['ldap_username_extension']);
 	$user .= empty($modSettings['ldap_dn']) ? '' : ',' . $modSettings['ldap_dn'];
-	$ConnData['ldapbind'] = ldap_bind($ConnData['ldapconn'], $user, $modSettings['ldap_password']);
+	$ConnData['ldapbind'] = @ldap_bind($ConnData['ldapconn'], $user, $modSettings['ldap_password']);
 	if (!$ConnData['ldapbind'])
-		return array();
-	else
-		return $ConnData;
+		$ConnData['error'] = getLDAPError($ConnData['ldapconn']);
+	
+	return $ConnData;
 }
 
 /*
  * This function simply closes the connection to the LDAP server
  *
- * @param pointer to array &$ConnData which contains the connection parameters
+ * @param LDAP link identifier from ldap_connect
  * @return
  */
-function closeLDAPServer(&$ConnData)
+function closeLDAPServer($link_identifier)
 {
-	ldap_close($ConnData['ldapconn']);
-	//Reset the variable. Just in case
-	$ConnData = array();
+	ldap_close($link_identifier);
+}
+
+/*
+ * This function returns the last error of the LDAP service
+ *
+ * @param LDAP link identifier from ldap_connect
+ * @return an array with Error number and description
+ */
+function getLDAPError($link_identifier)
+{
+	$error = array();
+	$error['LDAP_ErrNum'] = ldap_errno($link_identifier);
+	$error['LDAP_ErrMsg'] = ldap_error($link_identifier);
+	
+	return $error;	
 }
 
 /*

@@ -26,6 +26,7 @@ $txt['ldap_disabled'] = 'LDAP disabled, a user tried to login with: ';
 
 // Test Labels
 $txt['ldap_test_error'] = 'LDAP connection test failed. Please check your configuration';
+$txt['ldap_test_error_server_said'] = 'The server said:';
 $txt['ldap_test_success'] = 'LDAP connection test succeeded. Congratulations, your users can now use LDAP for authentication';
 $txt['ldap_conn_not_set'] = 'Some credentials missing, unable to proceed.';
 $txt['ldap_conn_failed'] = 'Failed to connect to LDAP server.';

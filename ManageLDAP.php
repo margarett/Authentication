@@ -66,14 +66,14 @@ function TestLDAP()
 	{
 		$ConnData = connectLDAPServer();
 		//Success!
-		if (!empty($ConnData))
+		if (!empty($ConnData['ldapconn']) && empty($ConnData['error'])) // No errors, success :)
 		{
-			closeLDAPServer($ConnData);
+			closeLDAPServer($ConnData['ldapconn']);
 			$context['ldap_test_success'] = true;
 		}
 		//Not yet :(
 		else
-			$context['ldap_test_error'] = true;
+			$context['ldap_test_errors'] = empty($ConnData['error']) ? '' : $ConnData['error'];
 	}
 
 	$context['sub_template'] = 'test_ldap';
@@ -109,7 +109,7 @@ function SettingsLDAP($return_config = false)
 		array('check', 'ldap_enabled'),
 		'',
 		array('text', 'ldap_host'),
-		array('text', 'ldap_port'),
+		array('text', 'ldap_port', 5, '389'),
 		array('text', 'ldap_dn'),
 		array('text', 'ldap_user'),
 		array('password', 'ldap_password'),
