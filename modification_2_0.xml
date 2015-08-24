@@ -16,7 +16,7 @@ $helptxt['ldap_primary_membergroup'] = 'Membergroups available to set for sync\'
 ]]></add>
         </operation>
     </file>
-	<file name="$sourcedir/Subs-Members.php">
+<!--	<file name="$sourcedir/Subs-Members.php">
 		<operation>
 			<search position="replace"><![CDATA[	if (empty($regOptions['auth_method']) || !in_array($regOptions['auth_method'], array('password', 'openid')))]]></search>
 			<add><![CDATA[	if (empty($regOptions['auth_method']) || !in_array($regOptions['auth_method'], array('password', 'openid', 'ldap')))]]></add>
@@ -31,5 +31,5 @@ $helptxt['ldap_primary_membergroup'] = 'Membergroups available to set for sync\'
 			<search position="after"><![CDATA[		'openid_uri' => (!empty($regOptions['openid']) ? $regOptions['openid'] : ''),]]></search>
 			<add><![CDATA[		'auth_type' => ($regOptions['auth_method'] == 'ldap'?1:0),]]></add>
 		</operation>
-	</file>
+	</file> -->
 </modification>

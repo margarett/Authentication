@@ -14,7 +14,7 @@
 		<require-file name="ManageLDAP.english.php" destination="$themedir/languages" />
 		<require-file name="ldap.png" destination="$imagesdir/admin" />
 		<code>install.php</code>
-		<database>install-database.php</database>
+<!--		<database>install-database.php</database> -->
 	</install>
 	<uninstall for="2.0-2.0.99">
 		<modification reverse="true">modification_2_0.xml</modification>
