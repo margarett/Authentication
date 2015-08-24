@@ -22,4 +22,12 @@ remove_integration_function('integrate_load_theme', 'LDAPLoadThemeHook');
 //remove_integration_function('integrate_validate_login', 'LDAPLoginHook');
 //remove_integration_function('integrate_other_passwords', 'LDAPOtherPasswordHook');
 
+//At uninstall, we disable LDAP and remove LDAP user data in $modSettings
+updateSettings(array(
+	'ldap_enabled' => 0,
+	'ldap_user' => '',
+	'ldap_password' => '',
+	),
+false);
+
 ?>
