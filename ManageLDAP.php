@@ -25,7 +25,7 @@ function ManageLDAP()
 		'test_ldap' => 'TestLDAP',
 		'settings_ldap' => 'SettingsLDAP',
 	);
-	
+
 	checkSession('request');
 
 	loadTemplate('ManageLDAP');
@@ -52,7 +52,7 @@ function ManageLDAP()
 }
 
 /**
- * Syncing SMF members table with active directory
+ * Test the LDAP settings at administration panel
  */
 function TestLDAP()
 {
@@ -64,7 +64,7 @@ function TestLDAP()
 	//Are we asked to test the connection? Well let's do so!
 	if (isset($_REQUEST['run']))
 	{
-		$ConnData = connectLDAPServer();
+		$ConnData = connectLDAPServer(true);
 		//Success!
 		if (!empty($ConnData['ldapconn']) && empty($ConnData['error'])) // No errors, success :)
 		{
@@ -96,7 +96,7 @@ function SettingsLDAP($return_config = false)
 			'min_posts' => -1
 		)
 	);
-	
+
 	$vMembergroups[0] = $txt['ldap_membergroup_default'];
 	
 	while ($vRow = $smcFunc['db_fetch_assoc']($vRequest)) {
@@ -119,7 +119,7 @@ function SettingsLDAP($return_config = false)
 		'',
 		array('text', 'ldap_username_extension'),
 		array('text', 'ldap_search_filter'),
-		array('text', 'ldap_default_group'),
+		array('text', 'ldap_group'),
 		'',
 		array('text', 'ldap_attrib_user_login'),
 		array('text', 'ldap_attrib_email'),
@@ -127,16 +127,23 @@ function SettingsLDAP($return_config = false)
 		array('select', 'ldap_primary_membergroup', $vMembergroups),
 	);
 
-	if ($return_config) {
+	if ($return_config)
 		return $config_vars;
-	}
-		
+
 	// Setup the template stuff.
 	$context['post_url'] = $scripturl . '?action=admin;area=auth;sa=settings_ldap;save';
 	$context['settings_title'] = $txt['ldap_settings_title'];
 
 	// Saving settings?
-	if (isset($_REQUEST['save'])) {
+	if (isset($_REQUEST['save']))
+	{
+		// Password... Should we try to at least make it less easy to see...
+		if (!empty($_POST['ldap_password'][1]))
+		{
+			$_POST['ldap_password'][0] = base64_encode($_POST['ldap_password'][0]);
+			$_POST['ldap_password'][1] = base64_encode($_POST['ldap_password'][1]);
+		}
+
 		saveDBSettings($config_vars);
 		redirectexit('action=admin;area=auth;sa=settings_ldap;' . $context['session_var'] . '=' . $context['session_id'] . ';msg=' . (!empty($context['settings_message']) ? $context['settings_message'] : 'core_settings_saved'));
 	}

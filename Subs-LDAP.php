@@ -15,6 +15,19 @@ if (!defined('SMF')) {
 }
 
 /*
+ * Hook for initializations
+ * If LDAP is active, disable client side hashing
+ *
+ */
+function LDAPLoadThemeHook(&$admin_areas)
+{
+	global $modSettings, $context;
+
+	if (!empty($modSettings['ldap_enabled']))
+		$context['disable_login_hashing'] = true;
+}
+
+/*
  * Adds the authentication options to the admin area menu.
  * 
  * @param array $admin_areas
@@ -26,7 +39,7 @@ function LDAPAdminMenuHook(&$admin_areas)
 	loadLanguage('ManageLDAP');
 	
 	$admin_areas['config']['areas']['auth'] = array(
-		'label' => $txt['admin_auth_title'],
+		'label' => $txt['admin_auth_ldap_title'],
 		'file' => 'ManageLDAP.php',
 		'function' => 'ManageLDAP',
 		'icon' => 'ldap.png',
@@ -39,94 +52,51 @@ function LDAPAdminMenuHook(&$admin_areas)
 }
 
 /*
- * Called by the 'integrate_validate_login' hook in LogInOut.php this function tries
- * to validate a user against an external active directory.
- *
- * @return string, 'retry' if failed authentication or an empty string if passedauthentication. Only if the user is an ldap user.
- */
-function LDAPLoginHook()
-{
-	global $context, $txt, $smcFunc;
-
-	$request = $smcFunc['db_query']('', '
-		SELECT passwd, auth_type
-		FROM {db_prefix}members
-		WHERE ' . ($smcFunc['db_case_sensitive'] ? 'LOWER(member_name) = LOWER({string:user_name})' : 'member_name = {string:user_name}') . '
-		LIMIT 1',
-		array(
-			'user_name' => $smcFunc['db_case_sensitive'] ? strtolower($_POST['user']) : $_POST['user'],
-		)
-	);
-	
-	$user_settings = $smcFunc['db_fetch_assoc']($request);
-	$smcFunc['db_free_result']($request);
-
-	if ($user_settings['auth_type'] == 1)
-	{
-		$login_details = array(
-			'username' => $_POST['user'],
-			'password' => $_POST['passwrd'],
-		);
-		
-		// Lets not store LDAP password in members table
-		$_POST['passwrd'] = rand_password();
-		$_POST['passwrd2'] = $user_settings['passwd'];
-		
-		// Check if user has supplied valid credentials
-		return contactLDAPServer('', $login_details);
-	}
-}
-
-/*
- * Called by the 'integrate_other_passwords' hook in LogInOut.php this function adds 
- * the randomly generated password to the $other_passwords array to stop it failing
- * as the password is validated externally and not by SMF.
- *
- * @param array $other_passwords
- */
-function LDAPOtherPasswordHook(&$other_passwords)
-{
-	$other_passwords[] = $_POST['passwrd2'];
-}
-
-
-/*
  * This function connects to the LDAP server and checks all the
  * login credentials to validate them.
  *
+ * @param: selection of choosing $modSettings user or login details
  * @returns an array of ldap variables
  */
-function connectLDAPServer()
+function connectLDAPServer($modSettings_user = false)
 {
 	global $modSettings, $txt;
-	
+
 	$ConnData = array();
 
 	// Basic testing. Every field needs to be filled...
 	if (empty($modSettings['ldap_enabled']) || empty($modSettings['ldap_host']) || empty($modSettings['ldap_user']) ||
 			empty($modSettings['ldap_dn']) || empty($modSettings['ldap_password']))
-	
 	{
 		$ConnData['error']['LDAP_ErrMsg'] = $txt['ldap_conn_not_set'];
 		return $ConnData;
 	}
-	
+
 	//389 is the default port.
 	if (empty($modSettings['ldap_port']))
 		$modSettings['ldap_port'] = 389;
-	
+
 	//Basic tests passed, let's try the connection itself
 	$ConnData['ldapconn'] = ldap_connect($modSettings['ldap_host'], $modSettings['ldap_port']);
 	// Setup LDAP options
 	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_PROTOCOL_VERSION, $modSettings['ldap_protocol_version']);
 	ldap_set_option($ConnData['ldapconn'], LDAP_OPT_REFERRALS, isset($modSettings['ldap_referrals']) ? $modSettings['ldap_referrals'] : 0);
 	// Bind. For the "bind" username we need the complete DN...
-	$user = 'cn=' . $modSettings['ldap_user'] . (empty($modSettings['ldap_username_extension']) ? '' : $modSettings['ldap_username_extension']);
-	$user .= empty($modSettings['ldap_dn']) ? '' : ',' . $modSettings['ldap_dn'];
-	$ConnData['ldapbind'] = @ldap_bind($ConnData['ldapconn'], $user, $modSettings['ldap_password']);
+	if ($modSettings_user)
+	{
+		$user = 'cn=' . $modSettings['ldap_user'] . (empty($modSettings['ldap_username_extension']) ? '' : $modSettings['ldap_username_extension']);
+		$user .= empty($modSettings['ldap_dn']) ? '' : ',' . $modSettings['ldap_dn'];
+		$ConnData['ldapbind'] = @ldap_bind($ConnData['ldapconn'], $user, base64_decode($modSettings['ldap_password']));
+	}
+	else
+	{
+		$user = 'cn=' . strtolower($_POST['user']) . (empty($modSettings['ldap_username_extension']) ? '' : $modSettings['ldap_username_extension']);
+		$user .= empty($modSettings['ldap_dn']) ? '' : ',' . $modSettings['ldap_dn'];
+		$ConnData['ldapbind'] = @ldap_bind($ConnData['ldapconn'], $user, $modSettings['ldap_password']);
+	}
 	if (!$ConnData['ldapbind'])
 		$ConnData['error'] = getLDAPError($ConnData['ldapconn']);
-	
+
 	return $ConnData;
 }
 
@@ -157,6 +127,27 @@ function getLDAPError($link_identifier)
 }
 
 /*
+ * This function performs the LDAP work at login.
+ * It connects to LDAP server and searches for the given user. If found,
+ * updates SMF's members table so that SMF's login process can handle it
+ * naturally.
+ * login credentials to validate them.
+ *
+ * @param
+ * @return
+ */
+function doLoginStuffLDAP()
+{
+	$ConnData = array();
+	// First things first, try the connection with the user in the configuration
+	// as we want to search for the user loggin' in
+	$ConnData = connectLDAPServer(true);
+	// Error. Not a problem. No LDAP, just that...
+	if (empty($ConnData['ldapbind']) || empty($ConnData['error']))
+		return;
+}
+
+/*
  * This function does all the work, connecting to the LDAP server and checking all the
  * login credentials to validate them.
  *
@@ -167,14 +158,14 @@ function getLDAPError($link_identifier)
 function contactLDAPServer($type = '', $login_details = array())
 {
 	global $context, $txt, $smcFunc, $scripturl, $modSettings, $sourcedir;
-	
+
 	if (!isset($txt['ldap_bind_failed'])) //Maybe we need to reload our language?
 		loadLanguage('ManageLDAP');
 
 	$vUserCount = 0;
 	$vUserList = null;
 	$vProcessing = null;
-	
+
 	// Is LDAP enabled?
 	if (isset($modSettings['ldap_enabled']) && $modSettings['ldap_enabled']) {
 		// Set LDAP connection
@@ -202,7 +193,7 @@ function contactLDAPServer($type = '', $login_details = array())
 
 				if ($ldapbind) {
 					// Are we syncing members?
-					if ($type == 'sync') {			
+					if ($type == 'sync') {
 						// Lets perform an LDAP search
 						if (isset($modSettings['ldap_dn']) && isset($modSettings['ldap_search_filter'])) {
 							$ldapsearch = @ldap_search($ldapconn, $modSettings['ldap_dn'], $modSettings['ldap_search_filter']);

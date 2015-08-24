@@ -11,7 +11,7 @@
 */
 
 // Admin Menu Labels
-$txt['admin_auth_title'] = 'Authentication';
+$txt['admin_auth_ldap_title'] = 'LDAP Authentication';
 $txt['admin_auth_ldap_settings'] = 'LDAP Settings';
 $txt['admin_auth_ldap_test'] = 'Test LDAP';
 
@@ -32,7 +32,6 @@ $txt['ldap_conn_not_set'] = 'Some credentials missing, unable to proceed.';
 $txt['ldap_conn_failed'] = 'Failed to connect to LDAP server.';
 $txt['ldap_bind_failed'] = 'Failed to bind LDAP details.';
 $txt['ldap_search_error'] = 'Error searching for user on authentication server.';
-$txt['ldap_sync_completed'] = 'The sync completed successfully. %s members have been added or updated.<br/><br/>A - Added<br/>U - Updated<br/><br/>%s';
 $txt['ldap_no_results_error'] = 'Error, no results found.';
 $txt['ldap_login_failed'] = 'Failed to login onto LDAP server.';
 $txt['ldap_unable_to_add_member'] = 'Unable to add new member: ';
@@ -51,7 +50,7 @@ $txt['ldap_referrals'] = 'Allow Referrals';
 $txt['ldap_dn'] = 'Distinguished Name (DN)';
 $txt['ldap_username_extension'] = 'Username Extension';
 $txt['ldap_search_filter'] = 'Search Filter';
-$txt['ldap_default_group'] = 'Default Group';
+$txt['ldap_group'] = 'Location (OU) of LDAP users';
 $txt['ldap_attrib_user_login'] = 'Default AD Username Field';
 $txt['ldap_attrib_email'] = 'Default AD Email Field';
 $txt['save_ldap_settings'] = 'Save';
@@ -61,4 +60,5 @@ $txt['ldap_membergroup_default'] = '(no primary membergroup)';
 //Errors in configuration
 $txt['ldap_config_disabled'] = 'LDAP support is disabled, check LDAP Settings';
 $txt['ldap_php_disabled'] = 'LDAP functions in PHP are not enabled! This MOD can\'t work without those';
+
 ?>
